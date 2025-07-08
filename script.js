@@ -10,8 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const isolamentoM2Group = document.getElementById('isolamentoM2Group');
     const isolamentoM2Input = document.getElementById('isolamentoM2');
     const difusoresQtdInput = document.getElementById('difusoresQtd');
-    const grelhasQtdInput = document.getElementById('grelhasQtd');
+    const grelhasRetorno50x40QtdInput = document.getElementById('grelhasRetorno50x40Qtd');
+    const grelhasRetorno40x20QtdInput = document.getElementById('grelhasRetorno40x20Qtd');
     const taesQtdInput = document.getElementById('taesQtd');
+    const tuboCobreQtdInput = document.getElementById('tuboCobreQtd');
     const suportesQtdInput = document.getElementById('suportesQtd');
     const calcularOrcamentoBtn = document.getElementById('calcularOrcamento');
     const resultadoSection = document.getElementById('resultado');
@@ -22,30 +24,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const detalhamentoTabelaBody = document.querySelector('#detalhamentoTabela tbody');
     const gerarPDFBtn = document.getElementById('gerarPDF');
 
-    // Mapeamento de preços (baseado nas informações fornecidas)
+    // Mapeamento de preços (Atualizado com seus valores)
     const PRECOS = {
         splitao: {
-            '30000': 17380.00, // Multi Split 30.000 BTU/h
-            '30000_inv': 5697.00, // Individual Inverter 30.000 BTU/h (média entre 5.549 e 5.845)
-            // Faixas para "outro" tipo de splitão podem ser definidas com base na metragem
-            // Para simplificar, se o usuário escolher "outro", ele insere o valor.
-            // Para um cálculo mais preciso, seria necessário uma tabela de capacidade vs preço
+            '5': 17299.00, // aparelho de climatização splitão 5TR
+            '7.5': 20209.00, // aparelho de climatização splitão 7,5TR
+            '10': 23844.00, // aparelho de climatização splitão 10TR
+            '15': 35372.00, // aparelho de climatização splitão 15TR
         },
-        duto_m2: 53.59, // R$ 10,87/KG * 5,12 KG/M2 + R$ 42,72/M2 = 55.59 (corrigi o 53.59 para 55.59)
+        duto_m2: 55.59, // R$ 10,87/KG * 5,12 KG/M2 + R$ 42,72/M2 (mantido o valor médio anterior, já que não foi fornecido novo para dutos)
         isolamento: {
-            vidro_m2: 2.65,
-            rocha_m2: 34.00,
+            vidro_m2: 2.65, // Mantido o valor anterior
+            rocha_m2: 34.00, // Mantido o valor anterior
         },
-        difusor_unidade: 108.22,
-        grelha_unidade: 320.70, // Média entre 75.49 e 565.90
-        tae_unidade: 310.80, // Média entre 72.74 e 548.87
-        suporte_unidade: 200.37, // Média entre 159.60 e 255.00
+        difusor_50x50: 350.00, // Difusor 50cm x 50cm
+        grelha_retorno_50x40: 365.00, // Grelha de retorno 50cm x 40cm
+        grelha_retorno_40x20: 224.00, // Grelha de retorno 40cm x 20cm
+        tae_100x100: 150.00, // Tomada de ar externo 100 x 100
+        tubo_cobre_5m: 150.00, // Tubo de cobre - 5m de comprimento
+        suporte_unidade: 200.37, // Mantido o valor médio anterior para suportes genéricos
         mao_obra: {
             instalacao_unidade_central: { min: 800, max: 1000 },
             fabricacao_montagem_dutos: { min: 1000, max: 2000 },
-            instalacao_difusores_grelhas: { min: 250, max: 700 },
+            instalacao_terminais_ar: { min: 250, max: 700 }, // Mão de obra para difusores/grelhas/TAE
             carga_gas_refrigerante: 1000.00,
-            infraestrutura_do_zero: { min: 2000, max: 3000 }
+            infraestrutura_do_zero: { min: 2000, max: 3000 },
+            instalacao_tubo_cobre: 50.00 // Estimativa de custo de mão de obra para instalar 5m de tubo de cobre
         }
     };
 
@@ -54,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
-    // Lógica para mostrar/esconder campo de "Outra Capacidade"
+    // Lógica para mostrar/esconder campo de "Outra Capacidade" do Splitão
     splitaoCapacidadeSelect.addEventListener('change', () => {
         if (splitaoCapacidadeSelect.value === 'outro') {
             splitaoOutraCapacidadeGroup.style.display = 'flex';
@@ -102,14 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Por favor, insira um valor válido para "Outra Capacidade do Splitão".');
                 return;
             }
+            detalhamento.push({ item: 'Splitão (Valor Informado)', custo: custoSplitao });
         } else if (PRECOS.splitao[splitaoCapacidade]) {
             custoSplitao = PRECOS.splitao[splitaoCapacidade];
+            detalhamento.push({ item: `Splitão (${splitaoCapacidade} TR)`, custo: custoSplitao });
         } else {
             alert('Por favor, selecione uma capacidade válida para o Splitão.');
             return;
         }
         custoEquipamentos += custoSplitao;
-        detalhamento.push({ item: 'Splitão (Unidade Central)', custo: custoSplitao });
+
 
         // 2. Custo de Materiais e Componentes
         const dutosM2 = parseFloat(dutosM2Input.value);
@@ -134,21 +140,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const difusoresQtd = parseFloat(difusoresQtdInput.value);
         if (isNaN(difusoresQtd) || difusoresQtd < 0) { alert('Verifique a quantidade de difusores.'); return; }
-        const custoDifusores = difusoresQtd * PRECOS.difusor_unidade;
+        const custoDifusores = difusoresQtd * PRECOS.difusor_50x50;
         custoMateriais += custoDifusores;
-        detalhamento.push({ item: `Difusores (${difusoresQtd} unidades)`, custo: custoDifusores });
+        detalhamento.push({ item: `Difusores (50x50cm) (${difusoresQtd} unidades)`, custo: custoDifusores });
 
-        const grelhasQtd = parseFloat(grelhasQtdInput.value);
-        if (isNaN(grelhasQtd) || grelhasQtd < 0) { alert('Verifique a quantidade de grelhas.'); return; }
-        const custoGrelhas = grelhasQtd * PRECOS.grelha_unidade;
-        custoMateriais += custoGrelhas;
-        detalhamento.push({ item: `Grelhas (${grelhasQtd} unidades)`, custo: custoGrelhas });
+        const grelhasRetorno50x40Qtd = parseFloat(grelhasRetorno50x40QtdInput.value);
+        if (isNaN(grelhasRetorno50x40Qtd) || grelhasRetorno50x40Qtd < 0) { alert('Verifique a quantidade de grelhas 50x40cm.'); return; }
+        const custoGrelhasRetorno50x40 = grelhasRetorno50x40Qtd * PRECOS.grelha_retorno_50x40;
+        custoMateriais += custoGrelhasRetorno50x40;
+        detalhamento.push({ item: `Grelhas de Retorno (50x40cm) (${grelhasRetorno50x40Qtd} unidades)`, custo: custoGrelhasRetorno50x40 });
+
+        const grelhasRetorno40x20Qtd = parseFloat(grelhasRetorno40x20QtdInput.value);
+        if (isNaN(grelhasRetorno40x20Qtd) || grelhasRetorno40x20Qtd < 0) { alert('Verifique a quantidade de grelhas 40x20cm.'); return; }
+        const custoGrelhasRetorno40x20 = grelhasRetorno40x20Qtd * PRECOS.grelha_retorno_40x20;
+        custoMateriais += custoGrelhasRetorno40x20;
+        detalhamento.push({ item: `Grelhas de Retorno (40x20cm) (${grelhasRetorno40x20Qtd} unidades)`, custo: custoGrelhasRetorno40x20 });
+
 
         const taesQtd = parseFloat(taesQtdInput.value);
         if (isNaN(taesQtd) || taesQtd < 0) { alert('Verifique a quantidade de TAEs.'); return; }
-        const custoTAEs = taesQtd * PRECOS.tae_unidade;
+        const custoTAEs = taesQtd * PRECOS.tae_100x100;
         custoMateriais += custoTAEs;
-        detalhamento.push({ item: `TAEs (Venezianas) (${taesQtd} unidades)`, custo: custoTAEs });
+        detalhamento.push({ item: `TAEs (100x100cm) (${taesQtd} unidades)`, custo: custoTAEs });
+
+        const tuboCobreQtd = parseFloat(tuboCobreQtdInput.value);
+        if (isNaN(tuboCobreQtd) || tuboCobreQtd < 0) { alert('Verifique a quantidade de Tubos de Cobre.'); return; }
+        const custoTuboCobre = tuboCobreQtd * PRECOS.tubo_cobre_5m;
+        custoMateriais += custoTuboCobre;
+        detalhamento.push({ item: `Tubos de Cobre (5m) (${tuboCobreQtd} unidades)`, custo: custoTuboCobre });
 
         const suportesQtd = parseFloat(suportesQtdInput.value);
         if (isNaN(suportesQtd) || suportesQtd < 0) { alert('Verifique a quantidade de suportes.'); return; }
@@ -161,15 +180,20 @@ document.addEventListener('DOMContentLoaded', () => {
         custoMaoObra += custoMoUnidadeCentral;
         detalhamento.push({ item: 'Mão de Obra: Instalação Unidade Central', custo: custoMoUnidadeCentral });
 
-        // A mão de obra de dutos e difusores/grelhas é mais complexa de calcular linearmente com a quantidade.
-        // Usaremos uma média ou fator de complexidade. Aqui, para simplificar, usaremos as faixas médias.
+        // Mão de obra para dutos (baseada nas faixas médias)
         const custoMoDutos = (PRECOS.mao_obra.fabricacao_montagem_dutos.min + PRECOS.mao_obra.fabricacao_montagem_dutos.max) / 2;
         custoMaoObra += custoMoDutos;
         detalhamento.push({ item: 'Mão de Obra: Fabricação e Montagem de Dutos', custo: custoMoDutos });
 
-        const custoMoDifusoresGrelhas = (PRECOS.mao_obra.instalacao_difusores_grelhas.min + PRECOS.mao_obra.instalacao_difusores_grelhas.max) / 2;
-        custoMaoObra += custoMoDifusoresGrelhas;
-        detalhamento.push({ item: 'Mão de Obra: Instalação de Difusores e Grelhas', custo: custoMoDifusoresGrelhas });
+        // Mão de obra para terminais de ar (difusores/grelhas/TAE)
+        const custoMoTerminaisAr = (PRECOS.mao_obra.instalacao_terminais_ar.min + PRECOS.mao_obra.instalacao_terminais_ar.max) / 2;
+        custoMaoObra += custoMoTerminaisAr;
+        detalhamento.push({ item: 'Mão de Obra: Instalação de Difusores, Grelhas e TAEs', custo: custoMoTerminaisAr });
+        
+        // Mão de obra para instalação do tubo de cobre
+        const custoMoTuboCobre = tuboCobreQtd * PRECOS.mao_obra.instalacao_tubo_cobre;
+        custoMaoObra += custoMoTuboCobre;
+        detalhamento.push({ item: `Mão de Obra: Instalação de Tubos de Cobre (${tuboCobreQtd} unidades)`, custo: custoMoTuboCobre });
 
         // Carga de Gás Refrigerante (assume-se necessária para sistemas de grande porte ou sem carga de fábrica)
         custoMaoObra += PRECOS.mao_obra.carga_gas_refrigerante;
