@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cargaTermicaInput = document.getElementById('cargaTermica');
     const preInstalacaoCheckbox = document.getElementById('preInstalacao');
     const splitaoCapacidadeSelect = document.getElementById('splitaoCapacidade');
-    const splitaoOutraCapacidadeGroup = document.getElementById('splitaoOutraCapacidadeGroup');
-    const splitaoOutraCapacidadeInput = document.getElementById('splitaoOutraCapacidade');
     const dutosM2Input = document.getElementById('dutosM2');
     const isolamentoTipoSelect = document.getElementById('isolamentoTipo');
     const isolamentoM2Group = document.getElementById('isolamentoM2Group');
@@ -58,18 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
-    // Lógica para mostrar/esconder campo de "Outra Capacidade" do Splitão
-    splitaoCapacidadeSelect.addEventListener('change', () => {
-        if (splitaoCapacidadeSelect.value === 'outro') {
-            splitaoOutraCapacidadeGroup.style.display = 'flex';
-            splitaoOutraCapacidadeInput.setAttribute('required', 'required');
-        } else {
-            splitaoOutraCapacidadeGroup.style.display = 'none';
-            splitaoOutraCapacidadeInput.removeAttribute('required');
-            splitaoOutraCapacidadeInput.value = '';
-        }
-    });
-
     // Lógica para mostrar/esconder campo de metragem do isolamento
     isolamentoTipoSelect.addEventListener('change', () => {
         if (isolamentoTipoSelect.value !== 'nenhum') {
@@ -100,14 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Custo do Splitão
         const splitaoCapacidade = splitaoCapacidadeSelect.value;
         let custoSplitao = 0;
-        if (splitaoCapacidade === 'outro') {
-            custoSplitao = parseFloat(splitaoOutraCapacidadeInput.value);
-            if (isNaN(custoSplitao) || custoSplitao < 0) {
-                alert('Por favor, insira um valor válido para "Outra Capacidade do Splitão".');
-                return;
-            }
-            detalhamento.push({ item: 'Splitão (Valor Informado)', custo: custoSplitao });
-        } else if (PRECOS.splitao[splitaoCapacidade]) {
+        if (PRECOS.splitao[splitaoCapacidade]) {
             custoSplitao = PRECOS.splitao[splitaoCapacidade];
             detalhamento.push({ item: `Splitão (${splitaoCapacidade} TR)`, custo: custoSplitao });
         } else {
