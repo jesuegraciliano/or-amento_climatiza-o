@@ -33,12 +33,14 @@
             <div class="item-group">
                 <h3>Equipamento Principal</h3>
                 <div class="input-group">
-                    <label for="splitaoCapacidade">Capacidade do Splitão (BTU/h):</label>
+                    <label for="splitaoCapacidade">Capacidade do Splitão (TR):</label>
                     <select id="splitaoCapacidade" required>
                         <option value="">Selecione uma capacidade</option>
-                        <option value="30000">30.000 BTU/h (Multi Split)</option>
-                        <option value="30000_inv">30.000 BTU/h (Individual Inverter)</option>
-                        <option value="outro">Outra Capacidade (informar abaixo)</option>
+                        <option value="5">5 TR</option>
+                        <option value="7.5">7,5 TR</option>
+                        <option value="10">10 TR</option>
+                        <option value="15">15 TR</option>
+                        <option value="outro">Outra Capacidade (informar valor)</option>
                     </select>
                 </div>
                 <div class="input-group" id="splitaoOutraCapacidadeGroup" style="display: none;">
@@ -66,16 +68,24 @@
                     <input type="number" id="isolamentoM2" min="0" value="0">
                 </div>
                 <div class="input-group">
-                    <label for="difusoresQtd">Número de Difusores:</label>
+                    <label for="difusoresQtd">Número de Difusores (50cm x 50cm):</label>
                     <input type="number" id="difusoresQtd" min="0" value="0">
                 </div>
                 <div class="input-group">
-                    <label for="grelhasQtd">Número de Grelhas:</label>
-                    <input type="number" id="grelhasQtd" min="0" value="0">
+                    <label for="grelhasRetorno50x40Qtd">Número de Grelhas de Retorno (50cm x 40cm):</label>
+                    <input type="number" id="grelhasRetorno50x40Qtd" min="0" value="0">
                 </div>
                 <div class="input-group">
-                    <label for="taesQtd">Número de TAEs (Venezianas):</label>
+                    <label for="grelhasRetorno40x20Qtd">Número de Grelhas de Retorno (40cm x 20cm):</label>
+                    <input type="number" id="grelhasRetorno40x20Qtd" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="taesQtd">Número de Tomadas de Ar Externo (100 x 100):</label>
                     <input type="number" id="taesQtd" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="tuboCobreQtd">Tubos de Cobre (5m de comprimento):</label>
+                    <input type="number" id="tuboCobreQtd" min="0" value="0">
                 </div>
                 <div class="input-group">
                     <label for="suportesQtd">Número de Suportes para Condensadora:</label>
