@@ -14,11 +14,11 @@
             <h2>Dados do Projeto</h2>
             <div class="input-group">
                 <label for="metragem">Metragem Quadrada (m²):</label>
-                <input type="number" id="metragem" min="1" required>
+                <input type="number" id="metragem" min="1" placeholder="Ex: 150" required>
             </div>
             <div class="input-group">
                 <label for="cargaTermica">Carga Térmica (TR):</label>
-                <input type="number" id="cargaTermica" min="0.1" step="0.1" required>
+                <input type="number" id="cargaTermica" min="0.1" step="0.1" placeholder="Ex: 7.5" required>
             </div>
             <div class="input-group checkbox-group">
                 <input type="checkbox" id="preInstalacao">
@@ -28,7 +28,7 @@
 
         <div class="form-section">
             <h2>Itens do Orçamento</h2>
-            <p class="description">Preencha as quantidades dos itens necessários para o seu projeto. Os custos serão calculados com base nas referências fornecidas.</p>
+            <p class="description">Selecione o equipamento principal e preencha as quantidades dos demais itens. Os custos serão calculados com base nas referências fornecidas.</p>
 
             <div class="item-group">
                 <h3>Equipamento Principal</h3>
@@ -116,7 +116,8 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.autotable.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
