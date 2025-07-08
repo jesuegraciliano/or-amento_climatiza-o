@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento HVAC - Splitão</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Estimativa de Custos para Instalação de Sistema de Climatização Dutada com Splitão</h1>
+
+        <div class="form-section">
+            <h2>Dados do Projeto</h2>
+            <div class="input-group">
+                <label for="metragem">Metragem Quadrada (m²):</label>
+                <input type="number" id="metragem" min="1" required>
+            </div>
+            <div class="input-group">
+                <label for="cargaTermica">Carga Térmica (TR):</label>
+                <input type="number" id="cargaTermica" min="0.1" step="0.1" required>
+            </div>
+            <div class="input-group checkbox-group">
+                <input type="checkbox" id="preInstalacao">
+                <label for="preInstalacao">Já existe pré-instalação de infraestrutura?</label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Itens do Orçamento</h2>
+            <p class="description">Preencha as quantidades dos itens necessários para o seu projeto. Os custos serão calculados com base nas referências fornecidas.</p>
+
+            <div class="item-group">
+                <h3>Equipamento Principal</h3>
+                <div class="input-group">
+                    <label for="splitaoCapacidade">Capacidade do Splitão (BTU/h):</label>
+                    <select id="splitaoCapacidade" required>
+                        <option value="">Selecione uma capacidade</option>
+                        <option value="30000">30.000 BTU/h (Multi Split)</option>
+                        <option value="30000_inv">30.000 BTU/h (Individual Inverter)</option>
+                        <option value="outro">Outra Capacidade (informar abaixo)</option>
+                    </select>
+                </div>
+                <div class="input-group" id="splitaoOutraCapacidadeGroup" style="display: none;">
+                    <label for="splitaoOutraCapacidade">Valor estimado do Splitão (R$):</label>
+                    <input type="number" id="splitaoOutraCapacidade" min="0">
+                </div>
+            </div>
+
+            <div class="item-group">
+                <h3>Materiais e Componentes</h3>
+                <div class="input-group">
+                    <label for="dutosM2">Dutos (m²):</label>
+                    <input type="number" id="dutosM2" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="isolamentoTipo">Tipo de Isolamento Térmico:</label>
+                    <select id="isolamentoTipo">
+                        <option value="nenhum">Nenhum</option>
+                        <option value="vidro">Lã de Vidro Aluminizada</option>
+                        <option value="rocha">Lã de Rocha</option>
+                    </select>
+                </div>
+                <div class="input-group" id="isolamentoM2Group" style="display: none;">
+                    <label for="isolamentoM2">Isolamento Térmico (m²):</label>
+                    <input type="number" id="isolamentoM2" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="difusoresQtd">Número de Difusores:</label>
+                    <input type="number" id="difusoresQtd" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="grelhasQtd">Número de Grelhas:</label>
+                    <input type="number" id="grelhasQtd" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="taesQtd">Número de TAEs (Venezianas):</label>
+                    <input type="number" id="taesQtd" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="suportesQtd">Número de Suportes para Condensadora:</label>
+                    <input type="number" id="suportesQtd" min="0" value="0">
+                </div>
+            </div>
+        </div>
+
+        <button id="calcularOrcamento">Calcular Orçamento</button>
+
+        <div class="result-section" id="resultado" style="display: none;">
+            <h2>Estimativa de Custos</h2>
+            <div class="summary">
+                <p><strong>Custo Total de Equipamentos:</strong> <span id="custoEquipamentos">R$ 0,00</span></p>
+                <p><strong>Custo Total de Materiais:</strong> <span id="custoMateriais">R$ 0,00</span></p>
+                <p><strong>Custo Total de Mão de Obra:</strong> <span id="custoMaoObra">R$ 0,00</span></p>
+                <h3><strong>Custo Total Estimado do Projeto:</strong> <span id="custoTotal">R$ 0,00</span></h3>
+            </div>
+
+            <h3>Detalhamento</h3>
+            <table id="detalhamentoTabela">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Custo Estimado (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
+            <button id="gerarPDF">Gerar PDF do Orçamento</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
