@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const detalhamentoTabelaBody = document.querySelector('#detalhamentoTabela tbody');
     const gerarPDFBtn = document.getElementById('gerarPDF');
 
-    // Mapeamento de preços (Atualizado com seus valores)
+    // Mapeamento de preços
     const PRECOS = {
         splitao: {
             '5': 17299.00, // aparelho de climatização splitão 5TR
@@ -30,24 +30,24 @@ document.addEventListener('DOMContentLoaded', () => {
             '10': 23844.00, // aparelho de climatização splitão 10TR
             '15': 35372.00, // aparelho de climatização splitão 15TR
         },
-        duto_m2: 55.59, // R$ 10,87/KG * 5,12 KG/M2 + R$ 42,72/M2 (mantido o valor médio anterior, já que não foi fornecido novo para dutos)
+        duto_m2: 55.59,
         isolamento: {
-            vidro_m2: 2.65, // Mantido o valor anterior
-            rocha_m2: 34.00, // Mantido o valor anterior
+            vidro_m2: 2.65,
+            rocha_m2: 34.00,
         },
-        difusor_50x50: 350.00, // Difusor 50cm x 50cm
-        grelha_retorno_50x40: 365.00, // Grelha de retorno 50cm x 40cm
-        grelha_retorno_40x20: 224.00, // Grelha de retorno 40cm x 20cm
-        tae_100x100: 150.00, // Tomada de ar externo 100 x 100
-        tubo_cobre_5m: 150.00, // Tubo de cobre - 5m de comprimento
-        suporte_unidade: 200.37, // Mantido o valor médio anterior para suportes genéricos
+        difusor_50x50: 350.00,
+        grelha_retorno_50x40: 365.00,
+        grelha_retorno_40x20: 224.00,
+        tae_100x100: 150.00,
+        tubo_cobre_5m: 150.00,
+        suporte_unidade: 200.37,
         mao_obra: {
             instalacao_unidade_central: { min: 800, max: 1000 },
             fabricacao_montagem_dutos: { min: 1000, max: 2000 },
-            instalacao_terminais_ar: { min: 250, max: 700 }, // Mão de obra para difusores/grelhas/TAE
+            instalacao_terminais_ar: { min: 250, max: 700 },
             carga_gas_refrigerante: 1000.00,
             infraestrutura_do_zero: { min: 2000, max: 3000 },
-            instalacao_tubo_cobre: 50.00 // Estimativa de custo de mão de obra para instalar 5m de tubo de cobre
+            instalacao_tubo_cobre: 50.00
         }
     };
 
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         custoEquipamentos += custoSplitao;
 
-
         // 2. Custo de Materiais e Componentes
         const dutosM2 = parseFloat(dutosM2Input.value);
         if (isNaN(dutosM2) || dutosM2 < 0) { alert('Verifique a metragem dos dutos.'); return; }
@@ -135,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
         custoMateriais += custoGrelhasRetorno40x20;
         detalhamento.push({ item: `Grelhas de Retorno (40x20cm) (${grelhasRetorno40x20Qtd} unidades)`, custo: custoGrelhasRetorno40x20 });
 
-
         const taesQtd = parseFloat(taesQtdInput.value);
         if (isNaN(taesQtd) || taesQtd < 0) { alert('Verifique a quantidade de TAEs.'); return; }
         const custoTAEs = taesQtd * PRECOS.tae_100x100;
@@ -159,26 +157,21 @@ document.addEventListener('DOMContentLoaded', () => {
         custoMaoObra += custoMoUnidadeCentral;
         detalhamento.push({ item: 'Mão de Obra: Instalação Unidade Central', custo: custoMoUnidadeCentral });
 
-        // Mão de obra para dutos (baseada nas faixas médias)
         const custoMoDutos = (PRECOS.mao_obra.fabricacao_montagem_dutos.min + PRECOS.mao_obra.fabricacao_montagem_dutos.max) / 2;
         custoMaoObra += custoMoDutos;
         detalhamento.push({ item: 'Mão de Obra: Fabricação e Montagem de Dutos', custo: custoMoDutos });
 
-        // Mão de obra para terminais de ar (difusores/grelhas/TAE)
         const custoMoTerminaisAr = (PRECOS.mao_obra.instalacao_terminais_ar.min + PRECOS.mao_obra.instalacao_terminais_ar.max) / 2;
         custoMaoObra += custoMoTerminaisAr;
         detalhamento.push({ item: 'Mão de Obra: Instalação de Difusores, Grelhas e TAEs', custo: custoMoTerminaisAr });
         
-        // Mão de obra para instalação do tubo de cobre
         const custoMoTuboCobre = tuboCobreQtd * PRECOS.mao_obra.instalacao_tubo_cobre;
         custoMaoObra += custoMoTuboCobre;
         detalhamento.push({ item: `Mão de Obra: Instalação de Tubos de Cobre (${tuboCobreQtd} unidades)`, custo: custoMoTuboCobre });
 
-        // Carga de Gás Refrigerante (assume-se necessária para sistemas de grande porte ou sem carga de fábrica)
         custoMaoObra += PRECOS.mao_obra.carga_gas_refrigerante;
         detalhamento.push({ item: 'Mão de Obra: Carga de Gás Refrigerante', custo: PRECOS.mao_obra.carga_gas_refrigerante });
 
-        // Custo de Infraestrutura "do zero"
         if (!preInstalacao) {
             const custoMoInfraestrutura = (PRECOS.mao_obra.infraestrutura_do_zero.min + PRECOS.mao_obra.infraestrutura_do_zero.max) / 2;
             custoMaoObra += custoMoInfraestrutura;
@@ -192,8 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         custoMaoObraSpan.textContent = formatCurrency(custoMaoObra);
         custoTotalSpan.textContent = formatCurrency(custoTotal);
 
-        // Preencher tabela de detalhamento
-        detalhamentoTabelaBody.innerHTML = ''; // Limpa antes de preencher
+        detalhamentoTabelaBody.innerHTML = '';
         detalhamento.forEach(item => {
             const row = detalhamentoTabelaBody.insertRow();
             const cellItem = row.insertCell();
@@ -211,11 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
+        // Adicionar fonte (Helvética é uma boa base para compatibilidade)
+        doc.setFont('helvetica', 'normal');
+
         let y = 20;
 
         // Título
         doc.setFontSize(18);
-        doc.text('Estimativa de Custos para Instalação de Sistema de Climatização Dutada com Splitão', 105, y, null, null, 'center');
+        doc.text('Estimativa de Custos para Instalação de Sistema de Climatização Dutada com Splitão', 105, y, { align: 'center' });
         y += 15;
 
         // Sumário Executivo
@@ -224,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         y += 7;
         doc.setFontSize(10);
         const executiveSummary = `Este relatório apresenta uma análise detalhada e estimativas de custo para a instalação completa de sistemas de climatização dutada, com foco em unidades "splitão", na região de Florianópolis, Santa Catarina. A complexidade inerente a esses sistemas de grande porte exige uma abordagem de orçamento multifacetada e precisa. Serão delineadas as principais faixas de custo para equipamentos, materiais e mão de obra, destacando os fatores que exercem maior influência sobre o investimento total.`;
-        const splitText = doc.splitTextToSize(executiveSummary, 180); // 180mm de largura
+        const splitText = doc.splitTextToSize(executiveSummary, 180);
         doc.text(splitText, 15, y);
         y += doc.getTextDimensions(splitText).h + 10;
 
@@ -252,7 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
         doc.text(`Custo Total de Mão de Obra: ${formatCurrency(custoMaoObra)}`, 15, y);
         y += 10;
         doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold'); // Negrito para o total
         doc.text(`Custo Total Estimado do Projeto: ${formatCurrency(custoTotal)}`, 15, y);
+        doc.setFont('helvetica', 'normal'); // Volta ao normal
         y += 15;
 
         // Detalhamento da Tabela
@@ -268,24 +265,22 @@ document.addEventListener('DOMContentLoaded', () => {
             head: [tableColumn],
             body: tableRows,
             theme: 'striped',
-            headStyles: { fillColor: [44, 62, 80], textColor: 255 },
-            styles: { fontSize: 9, cellPadding: 3 },
+            headStyles: { fillColor: [44, 62, 80], textColor: 255, font: 'helvetica', fontStyle: 'bold' },
+            styles: { fontSize: 9, cellPadding: 3, font: 'helvetica', textColor: [33, 33, 33] },
             columnStyles: {
                 0: { cellWidth: 120 },
                 1: { cellWidth: 50, halign: 'right' }
             },
             margin: { left: 15, right: 15 },
             didDrawPage: function (data) {
-                // Footer
                 let str = 'Página ' + doc.internal.getNumberOfPages();
                 doc.setFontSize(9);
                 doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
             }
         });
 
-        // Adicionar texto de conclusões/recomendações
-        y = doc.autoTable.previous.finalY + 15; // Posição após a tabela
-        if (y > doc.internal.pageSize.height - 40) { // Se não houver espaço, adicione nova página
+        y = doc.autoTable.previous.finalY + 15;
+        if (y > doc.internal.pageSize.height - 40) {
             doc.addPage();
             y = 20;
         }
